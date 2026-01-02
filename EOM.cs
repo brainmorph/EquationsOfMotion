@@ -11,12 +11,13 @@ namespace EquationsOfMotion
         public State CurrentState = new State();
         public State NextState = new State();
 
-        public double g = 9.81;
+        public double g = 9.81;         // m/s^2
+        const double dt = 0.016667;     // seconds
 
         public EOM()
         {
             CalculateLinearDynamics();
-            CalculateRotationalDynamics();
+            CalculateRotationalDynamics(dt);
         }
 
         public void CalculateLinearDynamics()
@@ -45,7 +46,6 @@ namespace EquationsOfMotion
             double W_dot = F_z / CurrentState.m - CurrentState.P * CurrentState.V + CurrentState.Q * CurrentState.U;
 
             // Advance to next state
-            double dt = 0.0166;      // seconds
             NextState.U = U_dot * dt + CurrentState.U;
             NextState.V = V_dot * dt + CurrentState.V;
             NextState.W = W_dot * dt + CurrentState.W;
@@ -53,12 +53,12 @@ namespace EquationsOfMotion
             CurrentState = NextState;
         }
 
-        public void CalculateRotationalDynamics()
+        public void CalculateRotationalDynamics(double dt)
         {
-            ComputeBodyFrameAccelerations(0.0, 0.0, 0.0);
+            ComputeBodyFrameAccelerations(0.0, 0.0, 0.0, dt);
         }
 
-        private void ComputeBodyFrameAccelerations(double L, double M, double N)
+        private void ComputeBodyFrameAccelerations(double L, double M, double N, double dt)
         {
             // Compute body frame angular accelerations
             double P_dot = L + (CurrentState.I_yy - CurrentState.I_zz) * CurrentState.Q * CurrentState.R +
@@ -76,6 +76,10 @@ namespace EquationsOfMotion
             CurrentState.P_dot = P_dot;
             CurrentState.Q_dot = Q_dot;
             CurrentState.R_dot = R_dot;
+
+            CurrentState.P += P_dot * dt;
+            CurrentState.Q += Q_dot * dt;
+            CurrentState.R += R_dot * dt;
         }
 
         public double CalculateAlpha(State s)
