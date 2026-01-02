@@ -55,10 +55,27 @@ namespace EquationsOfMotion
 
         public void CalculateRotationalDynamics()
         {
+            ComputeBodyFrameAccelerations(0.0, 0.0, 0.0);
+        }
+
+        private void ComputeBodyFrameAccelerations(double L, double M, double N)
+        {
             // Compute body frame angular accelerations
-            double L = 0.0;
             double P_dot = L + (CurrentState.I_yy - CurrentState.I_zz) * CurrentState.Q * CurrentState.R +
-                           CurrentState.I_xz*(CurrentState.R_dot * CurrentState.P + CurrentState.P * CurrentState.Q);
+                           CurrentState.I_xz * (CurrentState.R_dot * CurrentState.P + CurrentState.P * CurrentState.Q) /
+                           CurrentState.I_xx;
+
+            double Q_dot = M + (CurrentState.I_zz - CurrentState.I_xx) * CurrentState.R * CurrentState.P +
+                           CurrentState.I_xz * (CurrentState.R * CurrentState.R - CurrentState.P * CurrentState.P) /
+                           CurrentState.I_yy;
+
+            double R_dot = N + (CurrentState.I_xx - CurrentState.I_yy) * CurrentState.P * CurrentState.Q +
+                           CurrentState.I_xz * (CurrentState.P_dot - CurrentState.Q * CurrentState.R) /
+                           CurrentState.I_zz;
+
+            CurrentState.P_dot = P_dot;
+            CurrentState.Q_dot = Q_dot;
+            CurrentState.R_dot = R_dot;
         }
 
         public double CalculateAlpha(State s)
