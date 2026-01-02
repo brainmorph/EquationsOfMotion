@@ -37,5 +37,8 @@ namespace EquationsOfMotion
         public double I_xy = 0;
         public double I_xz = -161; // kg*m^2
         public double I_yz = 0;
+
+        public double alpha = 0;
+        public double alpha_dot = 0;
     }
 }

@@ -7,6 +7,7 @@
             Console.WriteLine("Hello, World!");
 
             EOM eom = new EOM();
+            eom.Step();
 
             UdpComms udp = new UdpComms();
 
